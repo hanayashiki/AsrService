@@ -1,0 +1,9 @@
+.vs
+.vs/**/*
+.git
+.git/**/*
+Dockerfile
+.dockerignore
+
+Tools
+Tools/**/*

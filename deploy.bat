@@ -1,0 +1,1 @@
+docker build -t . && docker run  -v D:/testdotnetfordocker/testdotnetfordocker/Tools/cvte:/usr/local/kaldi/egs/cvte aspnetapp -d -p 8080:80 aspnetapp:latest
