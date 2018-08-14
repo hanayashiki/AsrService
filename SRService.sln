@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestRedis", "TestRedis\Test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreRun", "CoreRun\CoreRun.csproj", "{D2373C44-8BF4-4C4C-9B8D-41119E665E12}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestRedisCpp", "TestRedisCpp\TestRedisCpp.vcxproj", "{7DB6B4A5-ABB2-4521-A760-926D5B0A1D87}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,16 @@ Global
 		{D2373C44-8BF4-4C4C-9B8D-41119E665E12}.Release|x64.Build.0 = Release|Any CPU
 		{D2373C44-8BF4-4C4C-9B8D-41119E665E12}.Release|x86.ActiveCfg = Release|Any CPU
 		{D2373C44-8BF4-4C4C-9B8D-41119E665E12}.Release|x86.Build.0 = Release|Any CPU
+		{7DB6B4A5-ABB2-4521-A760-926D5B0A1D87}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{7DB6B4A5-ABB2-4521-A760-926D5B0A1D87}.Debug|x64.ActiveCfg = Debug|x64
+		{7DB6B4A5-ABB2-4521-A760-926D5B0A1D87}.Debug|x64.Build.0 = Debug|x64
+		{7DB6B4A5-ABB2-4521-A760-926D5B0A1D87}.Debug|x86.ActiveCfg = Debug|Win32
+		{7DB6B4A5-ABB2-4521-A760-926D5B0A1D87}.Debug|x86.Build.0 = Debug|Win32
+		{7DB6B4A5-ABB2-4521-A760-926D5B0A1D87}.Release|Any CPU.ActiveCfg = Release|Win32
+		{7DB6B4A5-ABB2-4521-A760-926D5B0A1D87}.Release|x64.ActiveCfg = Release|x64
+		{7DB6B4A5-ABB2-4521-A760-926D5B0A1D87}.Release|x64.Build.0 = Release|x64
+		{7DB6B4A5-ABB2-4521-A760-926D5B0A1D87}.Release|x86.ActiveCfg = Release|Win32
+		{7DB6B4A5-ABB2-4521-A760-926D5B0A1D87}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

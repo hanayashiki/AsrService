@@ -21,12 +21,12 @@ namespace CoreRun
             FakeDecoder.Start();
             byte[] mockWave = new byte[] { 1, 2, 3, 4 };
             IList<Task<DecodeResult>> list = new List<Task<DecodeResult>>();
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 200; i++) {
                 Task<DecodeResult> task = decoder.DecodeAsync(new Speech { SpeechId = i.ToString(), Wave = mockWave });
                 //Thread.Sleep(2);
                 list.Add(task);
             }
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 200; i++)
             {
                 DecodeResult result = await list[i];
                 Console.WriteLine(result.Text + "|" + result.Message);

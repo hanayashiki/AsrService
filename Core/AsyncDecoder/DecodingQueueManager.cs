@@ -69,7 +69,7 @@ namespace Core.AsyncDecoderImpl
             {
                 return (e) =>
                 {
-                    _logger.Fatal(e.Message);
+                    _logger.Error(e.Message);
                 };
             }
         }
