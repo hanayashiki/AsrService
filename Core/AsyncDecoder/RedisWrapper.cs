@@ -32,7 +32,8 @@ namespace Core.AsyncDecoderImpl
 
         private RedisWrapper()
         {
-            redis = ConnectionMultiplexer.Connect("localhost");
+            // redis = ConnectionMultiplexer.Connect("localhost");
+            redis = ConnectionMultiplexer.Connect("10.190.148.251:6379");
             db = redis.GetDatabase();
             sub = redis.GetSubscriber();
         }
