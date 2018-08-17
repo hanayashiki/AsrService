@@ -1,0 +1,21 @@
+{
+	"chunk_length_secs": -1.0,
+	"do_endpointing": false,
+	"online": false,
+	"num_threads_startup": 4,
+	"feature_type": "fbank",
+	"config": "/usr/local/kaldi/egs/cvte/s5/conf/online.conf",
+	"add_pitch": false,
+	"max_active": 7000,
+	"beam": 10.0,
+	"lattice_beam": 6.0,
+	"frames_per_chunk": 50,
+	"acoustic_scale": 1.0,
+
+	"word_symbol_table": "/usr/local/kaldi/egs/cvte/s5/exp/chain/tdnn/graph/words.txt",
+	"nnet3_in": "/usr/local/kaldi/egs/cvte/s5/exp/chain/tdnn/final.mdl",
+	"fst_in": "/usr/local/kaldi/egs/cvte/s5/exp/chain/tdnn/graph/HCLG.fst",
+	"lattice_wspecifier": "ark:/dev/null",
+
+	"sample_freq": 16000.0000
+}

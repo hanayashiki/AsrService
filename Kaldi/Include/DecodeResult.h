@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string>
 #include <utility>
 #include <libbson-1.0/bson.h>
@@ -16,6 +18,6 @@ public:
 		const uint8_t * data_start = bson_get_data(&b);
 		std::vector<uint8_t> data(data_start, data_start + b.len);
 		bson_destroy(&b);
-		return std::move(data);
+		return data;
 	}
 };

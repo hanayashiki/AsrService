@@ -11,6 +11,8 @@
 #include "hiredis/hiredis.h"
 #include "hiredis/async.h"
 #include "hiredis/adapters/libevent.h"
+#include "DecoderCore.h"
+
 
 /* This is the manager of resources and actions corresponding to
  * a decoding worker.
@@ -20,9 +22,9 @@
 
 class Decoder {
 public:
-	static void Run() {
+	static void Run(DecoderCore * core) {
 		DEC_LOG << "start running" << std::endl;
-		Decoder decoder;
+		Decoder decoder(core);
 		decoder.run();
 	}
 private:
@@ -34,8 +36,11 @@ private:
 	struct event_base * eventBase = nullptr;
        	redisAsyncContext * asyncContext = nullptr;
 	redisContext * context = nullptr;
-	Decoder()
-		: eventBase(event_base_new())       
+	DecoderCore * core;
+
+	Decoder(DecoderCore * core)
+		: eventBase(event_base_new()),
+		core(core)	
 	{
 		
 	}
@@ -73,16 +78,26 @@ private:
 			r->elements == 3 &&
 			strcmp(r->element[0]->str, "message") == 0) {
 			Decoder * decoder = (Decoder *)privdata;
-			bool success = decoder->fetchSpeech();
+			DecodeResult result;
+			bool success = decoder->fetchSpeech(&result);
 			if (!success) {
 				// logging		
 			}
+			auto data = result.ToBsonBin();
+			r = (redisReply*)redisCommand(decoder->context, 
+				"LPUSH %s %b", decoder->TextQueue, 
+				data.data(), data.size());
+			freeReplyObject(r);
+			r = (redisReply*)redisCommand(decoder->context,
+				"PUBLISH %s \"\"", decoder->TextSignal);
+			freeReplyObject(r);
 		}
 		
 	}
-	bool fetchSpeech() {
+	bool fetchSpeech(DecodeResult * result) {
 		redisReply * reply;
 		reply = (redisReply*)redisCommand(context, "RPOP %s", SpeechQueue);
+		// DEC_LOG << "fetchSpeech called" << std::endl;
 		if (reply == nullptr || reply->type != REDIS_REPLY_STRING) {
 			return false;
 		}
@@ -90,12 +105,16 @@ private:
 		size_t len = reply->len;
 		Speech speech(data, len);
 		if (!speech.Good) {
+			DEC_LOG << "Fuck this speech is not good";
+			DEC_LOG << ", len: " << len << std::endl; 
 			// TODO: logging, putting info in queue
 			return false;
 		}
 		freeReplyObject(reply);
 		// debug
 		std::cout << "got speech: " << speech.SpeechId << std::endl;
+		*result = core->GetDecodeResult(speech);
+
 		return true;
 	}
 	void run() {
@@ -112,7 +131,7 @@ private:
 		redisLibeventAttach(asyncContext, eventBase);
 		redisAsyncCommand(asyncContext, onMessage, this,
 				"SUBSCRIBE %s", SpeechSignal);
-		DEC_LOG << std::this_thread::get_id << ": " << "Decoder listening..." << std::endl;
+		DEC_LOG << std::this_thread::get_id() << ": " << "Decoder listening..." << std::endl;
 		event_base_dispatch(eventBase);
 	}
 

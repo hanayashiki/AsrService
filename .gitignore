@@ -347,3 +347,8 @@ $RECYCLE.BIN/
 TestResults/
 
 Tools/cvte/
+
+# binary executables
+*.out
+
+Kaldi/kaldi-service

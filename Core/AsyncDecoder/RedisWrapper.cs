@@ -33,7 +33,7 @@ namespace Core.AsyncDecoderImpl
         private RedisWrapper()
         {
             // redis = ConnectionMultiplexer.Connect("localhost");
-            redis = ConnectionMultiplexer.Connect("10.190.148.251:6379");
+            redis = ConnectionMultiplexer.Connect("localhost");
             db = redis.GetDatabase();
             sub = redis.GetSubscriber();
         }
@@ -46,6 +46,9 @@ namespace Core.AsyncDecoderImpl
         public void Push(Speech speech)
         {
             byte[] serialized = speech.ToBson();
+	    Console.WriteLine("Speech bson length: " + serialized.Length);
+	                var doc = speech.ToBsonDocument();
+			            Console.WriteLine(doc.ToString());
             db.ListLeftPush(speechQueue, serialized);
             sub.Publish(speechSignal, "");
         }
@@ -53,7 +56,9 @@ namespace Core.AsyncDecoderImpl
         public async Task<DecodeResult> PopDecodeResultAsync()
         {
             RedisValue result = await db.ListRightPopAsync(textQueue);
-            return BsonSerializer.Deserialize<DecodeResult>((byte[])result);
+            RawBsonDocument doc = new RawBsonDocument((byte[])result);
+            Console.WriteLine(doc);
+	    return BsonSerializer.Deserialize<DecodeResult>((byte[])result);
         }
 
         public void RegisterTextSignalHandler(Action<DecodeResult> succeedHandler, Action<RedisException> failureHandler)
