@@ -1,6 +1,6 @@
 {
 	"use_kaldi": true,
-	"workers": 2,
+	"workers": 10,
 
 	"redis_key": "",
 	"redis_server": "127.0.0.1",

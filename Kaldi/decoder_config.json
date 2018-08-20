@@ -6,9 +6,9 @@
 	"feature_type": "fbank",
 	"config": "/usr/local/kaldi/egs/cvte/s5/conf/online.conf",
 	"add_pitch": false,
-	"max_active": 7000,
-	"beam": 10.0,
-	"lattice_beam": 6.0,
+	"max_active": 200,
+	"beam": 3.0,
+	"lattice_beam": 3.0,
 	"frames_per_chunk": 50,
 	"acoustic_scale": 1.0,
 

@@ -44,7 +44,7 @@ int main(int argc, char * argv[]) {
 
 		KaldiService service(kaldi_config, decoder_config);
 		
-		DEC_LOG << "initializing service..." << std::endl;
+		DEC_LOG << "Initializing service..." << std::endl;
 		service.Run();
 
 		return -1;

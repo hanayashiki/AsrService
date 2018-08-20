@@ -2,7 +2,7 @@ IDIR=Include
 SRC=Source
 TEST=Test
 CC=g++
-CFLAGS=-I$(IDIR) -Ilibbson-1.0 -lbson-1.0 -lhiredis -levent -pthread -std=c++17 -lm -ldl
+CFLAGS=-I$(IDIR) -O3 -Ilibbson-1.0 -lbson-1.0 -lhiredis -levent -pthread -std=c++17 -lm -ldl
 
 KALDI_ROOT=/usr/local/kaldi
 KALDI_INCLUDE=-I$(KALDI_ROOT)/src -I$(KALDI_ROOT)/tools -I$(KALDI_ROOT)/tools/openfst/include -I$(KALDI_ROOT)/tools/ATLAS_headers/include
@@ -33,8 +33,7 @@ KALDI_DYNAMICS=$(KALDI_ROOT)/tools/openfst/lib/libfst.so \
 		/usr/lib/libf77blas.so.3 \
 		/usr/lib/libcblas.so.3 \
 		/usr/lib/liblapack_atlas.so.3
-
-KALDI_API=$(KALDI_ROOT)/src/online2/online2-wav-nnet3-latgen-faster-api.o 
+ 
 _KALDI_OUTS=online-gmm-decodable.o online-feature-pipeline.o online-ivector-feature.o online-nnet2-feature-pipeline.o online-gmm-decoding.o online-timing.o online-endpoint.o onlinebin-util.o online-speex-wrapper.o online-nnet2-decoding.o online-nnet2-decoding-threaded.o online-nnet3-decoding.o online2-wav-nnet3-latgen-faster-api.o  
 KALDI_OUTS=$(patsubst %,$(KALDI_ROOT)/src/online2/%,$(_KALDI_OUTS))
 
@@ -53,7 +52,7 @@ MAIN=$(patsubst %.o,$(ODIR)/%.o, $(_MAIN))
 OBJ=$(filter-out $(MAIN),$(_OBJ)) # avoid re-containing main
 
 
-$(ODIR)/%.o: $(SRC)/%.cpp $(DEPS) $(KALDI_API) $(KALDI_OUTS)
+$(ODIR)/%.o: $(SRC)/%.cpp $(DEPS) $(KALDI_OUTS)
 	$(CC) -c -o $@ $< $(CFLAGS) $(KALDI_FLAGS) $(KALDI_STATICS) $(KALDI_DYNAMICS)
 
 $(ODIR)/%.o: $(TEST)/%.cpp $(DEPS)
@@ -65,7 +64,7 @@ tests.out: $(OBJ) $(ODIR)/tests.o
 testDecoder.out: $(OBJ) $(ODIR)/testDecoder.o
 	$(CC) -o $@ $^ $(CFLAGS)	
 
-kaldi-service: $(OBJ) $(ODIR)/main.o $(KALDI_API) $(KALDI_OUTS) 
+kaldi-service: $(OBJ) $(ODIR)/main.o $(KALDI_OUTS) 
 	$(CC) -o $@ $^ $(CFLAGS) $(KALDI_FLAGS) $(KALDI_STATICS) $(KALDI_DYNAMICS) 
 
 debug:

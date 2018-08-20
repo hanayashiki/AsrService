@@ -67,7 +67,9 @@ public:
 			core = new FakeDecoderCore();
 		}
 		
-		workers.emplace_back(Decoder::Run, core);
+		for (int i = 0; i < config.workers; i++) {
+			workers.emplace_back(Decoder::Run, core);
+		} 
 
 		for (int i = 0; i < workers.size(); i++) {
 			workers[i].join();

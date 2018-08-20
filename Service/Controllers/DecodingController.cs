@@ -17,8 +17,10 @@ namespace Service.Controllers
     {
         private readonly ILog _logger = LogManager.GetLogger(typeof(DecodingController));
         private readonly IDecoder _decoder;
+	private static int speechId = 0;
         public DecodingController(IDecoder decoder)
         {
+            Console.WriteLine("DecodingController ctor called");
             _decoder = decoder;
         }
         [HttpPost]
@@ -41,7 +43,7 @@ namespace Service.Controllers
             Speech speech = new Speech();
             speech.Wave = new byte[wave.Length];
             wave.CopyTo(new MemoryStream(speech.Wave));
-            speech.SpeechId = Convert.ToBase64String(new SHA1CryptoServiceProvider().ComputeHash(speech.Wave));
+            speech.SpeechId = (speechId++).ToString();
             DecodeResult result = await _decoder.DecodeAsync(speech);
             return JsonConvert.SerializeObject(result, Formatting.Indented);
         }
