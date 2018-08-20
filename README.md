@@ -90,11 +90,16 @@ The following files configures "(3) decoder"
       "workers": 100                            // How many threads are doing works. Parallelism can accommodate more requests. 
   }
   ```
+  To run decoder with the configurations above, use: 
+  ```
+  cd AsrService/Kaldi
+  ./kaldi-service ./kaldi_config.json ./decoder_config.json
+  ```
 
 + decoder_config.json
 
 This configuration file is very tricky and most of the explanation must be found in http://kaldi-asr.org/doc/online_decoding.html,
-because this is generally transcipting shell arguments to json. But you can follow the steps above and just modify some parameter for adjustment of performance.
+because this is generally transcripting shell arguments to json. But you can follow the steps above and just modify some parameter for adjustment of performance.
 
 ```javascript
   {
