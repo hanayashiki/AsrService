@@ -19,7 +19,7 @@ The server accepts POST request, with field of "wave" in the body, carrying the 
 
 The server sends response in following format:
 
-```json
+```
 {
   "Id": "6b239c12-a5dc-47f8-a17a-c31a6e34bb7e",
   "Text": "关于黄款汇率希望大家不要被误导当然这个火鸡的答案并不对",
@@ -57,7 +57,7 @@ For the minimalistic control, the service uses three configuration files.
 `async_decoder_config.json` configures "(1) web interface"
 
 + async_decoder_config.json
-  ```json 
+  ```javascript 
   {
     "ClearRedis": true,                         // Where we execute `FLUSHALL` to redis
     "MaxRetrials": 3,                           // The maximum time of retrials of getting message from decoder 
@@ -79,7 +79,7 @@ For the minimalistic control, the service uses three configuration files.
 The following files configures "(3) decoder"
 
 + kaldi_config.json
-  ```json
+  ```javascript
   {
       "max_wave_size_byte": 1000000,            // The maximum size of a wave file
       "redis_key": "",                          // Path to the key
@@ -96,7 +96,7 @@ The following files configures "(3) decoder"
 This configuration file is very tricky and most of the explanation must be found in http://kaldi-asr.org/doc/online_decoding.html,
 because this is generally transcipting shell arguments to json. But you can follow the steps above and just modify some parameter for adjustment of performance.
 
-```json
+```javascript
   {
       "acoustic_scale": 1.0,
       "add_pitch": false,
