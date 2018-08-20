@@ -7,10 +7,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CoreRun
+namespace Core
 {
-
-    internal class FakeDecoder
+    public class FakeDecoder
     {
         private readonly ConnectionMultiplexer redis;
         private readonly IDatabase db;

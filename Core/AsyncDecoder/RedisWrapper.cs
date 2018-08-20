@@ -6,9 +6,17 @@ using StackExchange.Redis;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using System.Threading.Tasks;
+using log4net;
+using Newtonsoft.Json;
 
 namespace Core.AsyncDecoderImpl
 {
+    public class RedisConfig
+    {
+        public string IP { set; get; }
+        public int Port { get; set; }
+    }
+
     /* 解决和 Redis 的通信问题，包括将数据结构序列化（目前希望用 BSON）
      * 只需要调用 RedisWrapper 就可以传输序列的数据到队列里面 
      * */
@@ -30,10 +38,14 @@ namespace Core.AsyncDecoderImpl
 
         public static RedisWrapper Instance { get => lazyInstance.Value; }
 
+        private readonly ILog _logger = LogManager.GetLogger(typeof(RedisWrapper));
+        public static RedisConfig config { set; get; } 
+
         private RedisWrapper()
         {
             // redis = ConnectionMultiplexer.Connect("localhost");
-            redis = ConnectionMultiplexer.Connect("localhost");
+            _logger.Info("Using configuration: " + JsonConvert.SerializeObject(config));
+            redis = ConnectionMultiplexer.Connect(config.IP + ":" + config.Port);
             db = redis.GetDatabase();
             sub = redis.GetSubscriber();
         }
@@ -46,9 +58,6 @@ namespace Core.AsyncDecoderImpl
         public void Push(Speech speech)
         {
             byte[] serialized = speech.ToBson();
-	    Console.WriteLine("Speech bson length: " + serialized.Length);
-	                var doc = speech.ToBsonDocument();
-			            Console.WriteLine(doc.ToString());
             db.ListLeftPush(speechQueue, serialized);
             sub.Publish(speechSignal, "");
         }

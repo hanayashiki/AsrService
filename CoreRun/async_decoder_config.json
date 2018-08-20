@@ -1,0 +1,9 @@
+﻿{
+  "ClearRedis": true,
+  "DecodingTimeoutMs": 3000,
+  "Redis": {
+    "IP": "127.0.0.1",
+    "Port": 6379
+  },
+  "EnableFakeDecoder": true
+}

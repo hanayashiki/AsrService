@@ -17,8 +17,9 @@ namespace CoreRun
         {
             ThreadPool.SetMinThreads(250, 250);
 
-            IDecoder decoder = new AsyncDecoder();
-            FakeDecoder.Start();
+            var config = AsyncDecoderConfig.FromFile("./async_decoder_config.json");
+            IDecoder decoder = new AsyncDecoder(config);
+
             byte[] mockWave = new byte[] { 1, 2, 3, 4 };
             IList<Task<DecodeResult>> list = new List<Task<DecodeResult>>();
             for (int i = 0; i < 3; i++) {
@@ -38,7 +39,9 @@ namespace CoreRun
         {
             ThreadPool.SetMinThreads(250, 250);
 
-            IDecoder decoder = new AsyncDecoder();
+            var config = AsyncDecoderConfig.FromFile("./async_decoder_config.json");
+            config.EnableFakeDecoder = false;
+            IDecoder decoder = new AsyncDecoder(config);
 
             byte[] mockWave = new byte[] { 1, 2, 3, 4 };
             IList<Task<DecodeResult>> list = new List<Task<DecodeResult>>();
@@ -60,7 +63,7 @@ namespace CoreRun
         {
             var logCfg = new FileInfo(AppDomain.CurrentDomain.BaseDirectory + "log4net.config");
             XmlConfigurator.ConfigureAndWatch(LogManager.GetRepository(Assembly.GetCallingAssembly()), logCfg);
-            TestRemote();
+            TestAsync();
             Console.ReadKey();
         }
     }

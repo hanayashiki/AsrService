@@ -5,6 +5,8 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using log4net;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace Core.AsyncDecoderImpl
 {
@@ -16,6 +18,19 @@ namespace Core.AsyncDecoderImpl
      * Intrinsically, see comments in `RedisWrapper` and `DecodingQueueManager` 
      * 
      * **/
+
+    public class AsyncDecoderConfig
+    {
+        public bool ClearRedis { get; set; }
+        public int DecodingTimeoutMs { get; set; }
+        public bool EnableFakeDecoder { get; set; }
+        public RedisConfig Redis { get; set; }
+        public static AsyncDecoderConfig FromFile(string pathToConfig)
+        {
+            return JsonConvert.DeserializeObject<AsyncDecoderConfig>(File.ReadAllText(pathToConfig));
+        }
+    }
+
     public class AsyncDecoder : IDecoder
     {
         private DecodingQueueManager queue;
@@ -26,17 +41,25 @@ namespace Core.AsyncDecoderImpl
 
         // TODO: should be in config
         private static int decodingTimeOut = 3000;
-        public AsyncDecoder(bool clear = true)
+        public AsyncDecoder(AsyncDecoderConfig config)
         {
+            RedisWrapper.config = config.Redis;
             queue = new DecodingQueueManager();
             redis = RedisWrapper.Instance;
             redis.RegisterTextSignalHandler(queue.DecodeResultSuccessHandler, queue.DecodeResultFailureHandler);
 
             _logger = LogManager.GetLogger(typeof(AsyncDecoder));
-            if (clear)
+            decodingTimeOut = config.DecodingTimeoutMs;
+            if (config.ClearRedis)
             {
                 _logger.Info("Redis FLUSHALL");
                 redis.FlushAll();
+            }
+            _logger.Info("Using configuration: " + JsonConvert.SerializeObject(config));
+
+            if (config.EnableFakeDecoder)
+            {
+                FakeDecoder.Start();
             }
         }
 
