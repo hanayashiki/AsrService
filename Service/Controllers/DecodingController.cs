@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -17,10 +15,8 @@ namespace Service.Controllers
     {
         private readonly ILog _logger = LogManager.GetLogger(typeof(DecodingController));
         private readonly IDecoder _decoder;
-	private static int speechId = 0;
         public DecodingController(IDecoder decoder)
         {
-            Console.WriteLine("DecodingController ctor called");
             _decoder = decoder;
         }
         [HttpPost]
@@ -43,7 +39,7 @@ namespace Service.Controllers
             Speech speech = new Speech();
             speech.Wave = new byte[wave.Length];
             wave.CopyTo(new MemoryStream(speech.Wave));
-            speech.SpeechId = (speechId++).ToString();
+            speech.SpeechId = Guid.NewGuid().ToString();
             DecodeResult result = await _decoder.DecodeAsync(speech);
             return JsonConvert.SerializeObject(result, Formatting.Indented);
         }
