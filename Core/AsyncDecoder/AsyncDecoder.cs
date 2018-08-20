@@ -69,15 +69,17 @@ namespace Core.AsyncDecoderImpl
 
         public async Task<DecodeResult> DecodeAsync(Speech speech)
         {
-            DecodeResult result = await DecodyAsyncImpl(speech);
-            for (int i = 0; i < _config.MaxRetrials - 1; i++)
+            DecodeResult result;
+            int i = 0;
+            do
             {
                 result = await DecodyAsyncImpl(speech);
                 if (result.Message == "Ok")
                 {
                     return result;
                 }
-            }
+                i++;
+            } while (i < _config.MaxRetrials);
             return result;
         }
 
