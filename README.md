@@ -90,11 +90,6 @@ The following files configures "(3) decoder"
       "workers": 100                            // How many threads are doing works. Parallelism can accommodate more requests. 
   }
   ```
-  To run decoder with the configurations above, use: 
-  ```
-  cd AsrService/Kaldi
-  ./kaldi-service ./kaldi_config.json ./decoder_config.json
-  ```
 
 + decoder_config.json
 
@@ -122,6 +117,12 @@ because this is generally transcripting shell arguments to json. But you can fol
       "word_symbol_table": "/usr/local/kaldi/egs/cvte/s5/exp/chain/tdnn/graph/words.txt"
   }
 ```
+
+  To run decoder with the configurations above, use: 
+  ```
+  cd AsrService/Kaldi
+  ./kaldi-service ./kaldi_config.json ./decoder_config.json
+  ```
 
 ## Performance
 
