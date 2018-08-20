@@ -23,6 +23,7 @@ namespace Core.AsyncDecoderImpl
     {
         public bool ClearRedis { get; set; }
         public int DecodingTimeoutMs { get; set; }
+        public int MaxRetrials { get; set; }
         public bool EnableFakeDecoder { get; set; }
         public RedisConfig Redis { get; set; }
         public static AsyncDecoderConfig FromFile(string pathToConfig)
@@ -39,10 +40,13 @@ namespace Core.AsyncDecoderImpl
         private static ConcurrentQueue<long> timeCostRecord = new ConcurrentQueue<long>();
         private readonly ILog _logger;
 
+        private readonly AsyncDecoderConfig _config;
+
         // TODO: should be in config
         private static int decodingTimeOut = 3000;
         public AsyncDecoder(AsyncDecoderConfig config)
         {
+            _config = config;
             RedisWrapper.config = config.Redis;
             queue = new DecodingQueueManager();
             redis = RedisWrapper.Instance;
@@ -64,6 +68,20 @@ namespace Core.AsyncDecoderImpl
         }
 
         public async Task<DecodeResult> DecodeAsync(Speech speech)
+        {
+            DecodeResult result = await DecodyAsyncImpl(speech);
+            for (int i = 0; i < _config.MaxRetrials - 1; i++)
+            {
+                result = await DecodyAsyncImpl(speech);
+                if (result.Message == "Ok")
+                {
+                    return result;
+                }
+            }
+            return result;
+        }
+
+        private async Task<DecodeResult> DecodyAsyncImpl(Speech speech)
         {
             Stopwatch sw = new Stopwatch();
             sw.Restart();
@@ -88,7 +106,8 @@ namespace Core.AsyncDecoderImpl
                     return new DecodeResult { Id = speech.SpeechId, Message = "TimeOut" };
                 }
                 decodeResult = queue.PopResult(speech.SpeechId);
-            } catch(StackExchange.Redis.RedisTimeoutException e)
+            }
+            catch (StackExchange.Redis.RedisTimeoutException e)
             {
                 decodeResult = new DecodeResult { Id = speech.SpeechId, Message = "RedisTimeOut" };
                 _logger.Fatal(e.Message);
@@ -99,6 +118,6 @@ namespace Core.AsyncDecoderImpl
             _logger.Info($"RTT {speech.SpeechId}: {sw.ElapsedMilliseconds}ms");
             _logger.Info($"Average RTT: {(1.0 * timeCostRecord.Sum() / timeCostRecord.Count)}ms");
             return decodeResult;
-        }
+        } 
     }
 }
