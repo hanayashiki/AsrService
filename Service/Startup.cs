@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Core;
 using Core.AsyncDecoderImpl;
+using log4net;
+using log4net.Config;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -40,6 +44,9 @@ namespace Service
 
             AsyncDecoderConfig config = AsyncDecoderConfig.FromFile(Regex.Match(arguments[1], "--decoder-config=(.*)").Groups[1].Value);
             services.AddSingleton<IDecoder, AsyncDecoder>(decoder => new AsyncDecoder(config));
+
+            var logCfg = new FileInfo(AppDomain.CurrentDomain.BaseDirectory + "log4net.config");
+            XmlConfigurator.ConfigureAndWatch(LogManager.GetRepository(Assembly.GetCallingAssembly()), logCfg);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
