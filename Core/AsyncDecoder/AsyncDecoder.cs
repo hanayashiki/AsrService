@@ -26,6 +26,9 @@ namespace Core.AsyncDecoderImpl
         public int MaxRetrials { get; set; }
         public bool EnableFakeDecoder { get; set; }
         public RedisConfig Redis { get; set; }
+
+	public int WorkerThreads { get; set; }
+        public int CompletionPortThreads { get; set; }
         public static AsyncDecoderConfig FromFile(string pathToConfig)
         {
             return JsonConvert.DeserializeObject<AsyncDecoderConfig>(File.ReadAllText(pathToConfig));
@@ -61,6 +64,8 @@ namespace Core.AsyncDecoderImpl
             }
             _logger.Info("Using configuration: " + JsonConvert.SerializeObject(config));
 
+            ThreadPool.SetMinThreads(config.WorkerThreads, config.CompletionPortThreads);
+
             if (config.EnableFakeDecoder)
             {
                 FakeDecoder.Start();
@@ -79,7 +84,11 @@ namespace Core.AsyncDecoderImpl
                     return result;
                 } else {
 		    // if failed we should give a new Id to indicate different speeches
+		    var oldId = speech.SpeechId;
 		    speech.SpeechId = Guid.NewGuid().ToString();
+                    _logger.Info("Retrying, i = " + i + ", speechId: " + speech.SpeechId
+                        + ", oldId: " + oldId);
+
 		}
                 i++;
             } while (i < _config.MaxRetrials);
@@ -111,12 +120,21 @@ namespace Core.AsyncDecoderImpl
                     return new DecodeResult { Id = speech.SpeechId, Message = "TimeOut" };
                 }
                 decodeResult = queue.PopResult(speech.SpeechId);
+                /*
+		if (new Random().NextDouble() < 0.5) {
+		    throw new Exception("mock redis timeout");
+		}*/
             }
             catch (StackExchange.Redis.RedisTimeoutException e)
             {
                 decodeResult = new DecodeResult { Id = speech.SpeechId, Message = "RedisTimeOut" };
-                _logger.Fatal(e.Message);
-            }
+                _logger.Fatal("[" + speech.SpeechId + "]: " + e.Message);
+            } 
+            catch (Exception e)
+            {
+                decodeResult = new DecodeResult { Id = speech.SpeechId, Message = "Unknown error" };
+                _logger.Fatal("[" + speech.SpeechId + "]: " + e.Message);
+	    }
 
             timeCostRecord.Enqueue(sw.ElapsedMilliseconds);
             if (timeCostRecord.Count > 100) timeCostRecord.TryDequeue(out _);

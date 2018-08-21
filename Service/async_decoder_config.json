@@ -1,10 +1,12 @@
 ﻿{
   "ClearRedis": true,
   "MaxRetrials": 3,
-  "DecodingTimeoutMs": 300000,
+  "DecodingTimeoutMs": 1000,
   "Redis": {
     "IP": "127.0.0.1",
     "Port": 6379
   },
-  "EnableFakeDecoder": false
+  "EnableFakeDecoder": false,
+  "WorkerThreads": 300,
+  "CompletionPortThreads": 300
 }
