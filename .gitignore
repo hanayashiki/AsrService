@@ -351,4 +351,6 @@ Tools/cvte/
 # binary executables
 *.out
 
+# vim crap
+*.swp
 Kaldi/kaldi-service

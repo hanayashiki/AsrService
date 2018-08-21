@@ -12,8 +12,8 @@ RUN \
 
 
 WORKDIR /usr/local/
-# Use the newest kaldi version
-RUN git clone https://github.com/kaldi-asr/kaldi.git
+# Use the modified kaldi
+RUN git clone https://github.com/hanayashiki/kaldi.git
 
 
 WORKDIR /usr/local/kaldi/tools
@@ -25,22 +25,45 @@ RUN ./configure && make depend -j $CPU_CORE && make -j $CPU_CORE
 
 RUN apt-get install -y tree vim
 
-# Copy cvte to Docker
-# COPY cvte /usr/local/kaldi/egs/cvte 
-# RUN ln -s /usr/local/kaldi/egs/wsj/s5/steps /usr/local/kaldi/egs/cvte/s5/steps
-# RUN ln -s /usr/local/kaldi/egs/wsj/s5/utils /usr/local/kaldi/egs/cvte/s5/utils
+# Install redis
+RUN mkdir /root/tools && cd /root/tools
+RUN wget http://download.redis.io/redis-stable.tar.gz && \
+	tar xvzf redis-stable.tar.gz && \
+	cd redis-stable && \
+	make
+
+# Install libevent
+RUN apt-get install -y libtool
+WORKDIR /root/tools
+RUN git clone https://github.com/libevent/libevent.git
+WORKDIR /root/tools/libevent
+RUN ./autogen.sh && ./configure && make && make install
+
+# Install libbson
+WORKDIR /root/tools
+RUN git clone https://github.com/mongodb/libbson.git
+WORKDIR /root/tools/libbson
+RUN ./autogen.sh && make && make install
+
+# Install hiredis
+WORKDIR /root/tools
+RUN git clone https://github.com/redis/hiredis.git 
+RUN cd hiredis && make && make install 
 
 # Build dotnet app
 FROM microsoft/dotnet:sdk AS build-env
 
-WORKDIR /app
+RUN apt-get update -qq && \
+	apt-get install -y gcc g++ git autoconf automake \
+		make
 
 # Copy csproj and restore as distinct layers
-COPY Service/*.csproj ./
+
+WORKDIR /app		
+COPY . .
 RUN dotnet restore
 
-# Copy everything else and build
-COPY Service/ ./
+# Build web interface
 
 RUN apt-get update && apt-get install -y tree
 RUN dotnet publish -c Release -o out
@@ -49,11 +72,15 @@ RUN echo "\n####Build results: ####" && tree out
 # Go back to where we build kaldi
 FROM build-kaldi
 
-# Build runtime image
-WORKDIR /app
-COPY --from=build-env /app/out .
-# Temporary
-WORKDIR /usr/local/kaldi/egs/cvte
-#
+# Build decoder
 
-ENTRYPOINT ["dotnet", "testdotnetfordocker.dll"]
+WORKDIR /app
+
+COPY --from=build-env /app/Service/out .
+
+COPY Kaldi/ /app/Kaldi/
+WORKDIR /app/Kaldi
+RUN make kaldi-service
+
+WORKDIR /app
+ENTRYPOINT ["dotnet", "Service.dll"]
