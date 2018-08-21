@@ -46,6 +46,7 @@ namespace Service
             services.AddSingleton<IDecoder, AsyncDecoder>(decoder => new AsyncDecoder(config));
 
             var logCfg = new FileInfo(AppDomain.CurrentDomain.BaseDirectory + "log4net.config");
+	    Console.WriteLine("Using config: " + AppDomain.CurrentDomain.BaseDirectory + "log4net.config");
             XmlConfigurator.ConfigureAndWatch(LogManager.GetRepository(Assembly.GetCallingAssembly()), logCfg);
         }
 

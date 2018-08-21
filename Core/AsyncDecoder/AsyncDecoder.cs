@@ -77,7 +77,10 @@ namespace Core.AsyncDecoderImpl
                 if (result.Message == "Ok")
                 {
                     return result;
-                }
+                } else {
+		    // if failed we should give a new Id to indicate different speeches
+		    speech.SpeechId = Guid.NewGuid().ToString();
+		}
                 i++;
             } while (i < _config.MaxRetrials);
             return result;
@@ -91,9 +94,9 @@ namespace Core.AsyncDecoderImpl
             DecodeResult decodeResult;
             try
             {
-                redis.Push(speech);
                 AutoResetEvent finishEvent = queue.RegisterEvent(speech.SpeechId);
-                bool success = await Task.Run(() =>
+                redis.Push(speech);
+		bool success = await Task.Run(() =>
                 {
                     bool result = finishEvent.WaitOne(decodingTimeOut);
                     if (!result)
