@@ -37,6 +37,10 @@ http://kaldi-asr.org/models/m2
 
 *TODO*
 
+### Start service
+
+*TODO*
+
 ## Rest API
 
 This service takes in speech in \*.wav format, which should be exactly **16 KHz** and **16-bit**.
