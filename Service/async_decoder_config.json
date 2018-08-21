@@ -1,6 +1,7 @@
 ﻿{
   "ClearRedis": true,
-  "DecodingTimeoutMs": 3330000,
+  "MaxRetrials": 3,
+  "DecodingTimeoutMs": 300000,
   "Redis": {
     "IP": "127.0.0.1",
     "Port": 6379

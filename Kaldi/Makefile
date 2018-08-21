@@ -2,7 +2,7 @@ IDIR=Include
 SRC=Source
 TEST=Test
 CC=g++
-CFLAGS=-I$(IDIR) -O3 -Ilibbson-1.0 -lbson-1.0 -lhiredis -levent -pthread -std=c++17 -lm -ldl
+CFLAGS=-I$(IDIR) -g -O3 -Ilibbson-1.0 -lbson-1.0 -lhiredis -levent -pthread -std=c++17 -lm -ldl
 
 KALDI_ROOT=/usr/local/kaldi
 KALDI_INCLUDE=-I$(KALDI_ROOT)/src -I$(KALDI_ROOT)/tools -I$(KALDI_ROOT)/tools/openfst/include -I$(KALDI_ROOT)/tools/ATLAS_headers/include
@@ -71,3 +71,11 @@ debug:
 	echo "$(OBJ) $(ODIR)/main.o $(KALDI_API)"  && echo "$(OBJ)" && echo "$(ODIR)/"
 debug_obj:
 	echo "$(OBJ)" &&  echo "$(MAIN)"
+deps:
+	echo $(DEPS)
+
+clean:
+	rm Bin/*.o *.out kaldi-service
+
+valgrind:
+	valgrind --leak-check=full --show-leak-kinds=all --leak-check=yes ./kaldi-service ./kaldi_config.json ./decoder_config.json 

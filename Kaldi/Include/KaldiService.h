@@ -11,16 +11,7 @@
 #include "DecodeResult.h"
 
 #include "json.h"
-
-struct KaldiServiceConfig {
-	bool use_kaldi;
-	int workers;
-	std::string redis_key;
-	std::string redis_server;
-	int redis_port;
-
-	size_t max_wave_size_byte;
-};
+#include "KaldiServiceConfig.h"
 
 static void to_json(nlohmann::json & j, const KaldiServiceConfig & c) {
 	using nlohmann::json;
@@ -31,7 +22,8 @@ static void to_json(nlohmann::json & j, const KaldiServiceConfig & c) {
 		{ "redis_server", c.redis_server },
 		{ "redis_port", c.redis_port },
 		
-		{ "max_wave_size_byte", c.max_wave_size_byte }
+		{ "max_wave_size_byte", c.max_wave_size_byte },
+		{ "thread_expires_after_decoding", c.thread_expires_after_decoding }
 	};
 }
 
@@ -44,6 +36,7 @@ static void from_json(const nlohmann::json & j, KaldiServiceConfig & c) {
 	c.redis_port = j.at("redis_port").get<int>();
 
 	c.max_wave_size_byte = j.at("max_wave_size_byte").get<int>();
+	c.thread_expires_after_decoding = j.at("thread_expires_after_decoding").get<bool>();
 }
 
 
@@ -68,14 +61,19 @@ public:
 		}
 		
 		for (int i = 0; i < config.workers; i++) {
-			workers.emplace_back(Decoder::Run, core);
+			workers.push_back(std::thread(Decoder::Run, core, config));
+			//workers.emplace_back(Decoder::Run, core, config);
 		} 
 
 		for (int i = 0; i < workers.size(); i++) {
 			workers[i].join();
 		}
 
-		if (config.use_kaldi) KaldiDecoderCore::Finalize();	
+		if (config.use_kaldi) {
+			KaldiDecoderCore::Finalize();	
+		} else {
+			delete core;
+		}
 	}
 
 };

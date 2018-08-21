@@ -66,7 +66,6 @@ namespace Core.AsyncDecoderImpl
         {
             RedisValue result = await db.ListRightPopAsync(textQueue);
             RawBsonDocument doc = new RawBsonDocument((byte[])result);
-            Console.WriteLine(doc);
 	    return BsonSerializer.Deserialize<DecodeResult>((byte[])result);
         }
 
