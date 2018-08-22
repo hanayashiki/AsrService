@@ -241,7 +241,7 @@ For the minimalistic control, the service uses three configuration files.
 
 `async_decoder_config.json` configures "(1) web interface"
 
-+ async_decoder_config.json
++ ServiceConf/async_decoder_config.json
   ```javascript 
   {
     "ClearRedis": true,                         // Where we execute `FLUSHALL` to redis
