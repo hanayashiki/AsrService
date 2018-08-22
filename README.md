@@ -115,13 +115,13 @@ The server sends response in following format:
 }
 ```
 
-Check if response\[`Message`] == `Ok`. **if not, there is a failure.**
+Check if response\['Message'] == 'Ok'. **if not, there is a failure.**
 
 The first field `Id` is the id generated for the speech (GUID), with which we can do some tracing in the log;
 
 The second field `Text` is the Chinese text of the given speech.
 
-The third field carries some messages if the decoding failed.
+The third field `Message` carries some messages if the decoding failed.
 
 for example:
 
@@ -134,6 +134,7 @@ for example:
 ```
 
 To test the API, use
+
 ```
 ./test.sh
 ```
