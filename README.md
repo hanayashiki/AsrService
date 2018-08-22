@@ -259,7 +259,7 @@ For the minimalistic control, the service uses three configuration files.
    This configuration is for "(1) web interface". Run web interface with
    ```
    cd AsrService
-   dotnet Service/bin/Debug/netcoreapp2.1/publishService.dll --decoder-config=path/to/async_decoder_config.json
+   dotnet Service/bin/Debug/netcoreapp2.1/publish/Service.dll --decoder-config=path/to/async_decoder_config.json
    ```
 
 The following files configures "(3) decoder"
