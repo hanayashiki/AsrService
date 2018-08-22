@@ -64,17 +64,20 @@ RUN pip3 install requests gevent
 # Build dotnet app
 FROM microsoft/dotnet:sdk AS build-env
 
+RUN apt-get update && apt-get install -y tree
+
 # Copy everything
 WORKDIR /app		
 
-RUN mkdir Service Core
+RUN mkdir Service Core CoreRun 
 COPY Service Service/
 COPY Core Core/
+
+# To make dotnet happy
+COPY CoreRun CoreRun/  
 COPY SRService.sln .
 
 # Build web interface
-
-RUN apt-get update && apt-get install -y tree
 RUN dotnet publish
 # RUN echo "\n####Build results: ####" && tree . 
 
@@ -95,9 +98,11 @@ RUN make kaldi-service
 
 WORKDIR /app
 
-COPY *.sh .
-COPY Makefile .
+COPY *.sh ./
+COPY Makefile ./
 COPY APITest APITest/
+COPY KaldiConf KaldiConf/
+COPY ServiceConf ServiceConf/
 
 RUN chmod +x ./init.sh
 

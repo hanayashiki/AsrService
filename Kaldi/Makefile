@@ -58,21 +58,8 @@ $(ODIR)/%.o: $(SRC)/%.cpp $(DEPS) $(KALDI_OUTS)
 $(ODIR)/%.o: $(TEST)/%.cpp $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-tests.out: $(OBJ) $(ODIR)/tests.o
-	$(CC) -o $@ $^ $(CFLAGS)
-
-testDecoder.out: $(OBJ) $(ODIR)/testDecoder.o
-	$(CC) -o $@ $^ $(CFLAGS)	
-
 kaldi-service: $(OBJ) $(ODIR)/main.o $(KALDI_OUTS) 
 	$(CC) -o $@ $^ $(CFLAGS) $(KALDI_FLAGS) $(KALDI_STATICS) $(KALDI_DYNAMICS) 
-
-debug:
-	echo "$(OBJ) $(ODIR)/main.o $(KALDI_API)"  && echo "$(OBJ)" && echo "$(ODIR)/"
-debug_obj:
-	echo "$(OBJ)" &&  echo "$(MAIN)"
-deps:
-	echo $(DEPS)
 
 clean:
 	rm Bin/*.o *.out kaldi-service

@@ -63,6 +63,9 @@ elif sys.argv[1] == "big":
 elif sys.argv[1] == "waitandpoll":
     print("Waiting for Kaldi decoder to init...")
     print("If taken too long, see Logs. There might be failures. ")
+    print("tail -n 50 Logs/web.log")
+    print("tail -n 50 Logs/redis.log")
+    print("tail -n 50 Logs/kaldi.log")
     while True:
         try:
             ok = checkOk(post('Tools/cvte/s5/data/wav/00030/2017_03_07_16.59.42_5013.wav'))
@@ -73,7 +76,7 @@ elif sys.argv[1] == "waitandpoll":
                 print(".", end='')
             time.sleep(1)
         except requests.exceptions.ConnectionError:
-            print("Connectiong failed, retrying...")
+            print("Connection failed, retrying...")
             time.sleep(3)
             continue
         except requests.exceptions.ReadTimeout:
