@@ -66,8 +66,8 @@ RUN dotnet restore
 # Build web interface
 
 RUN apt-get update && apt-get install -y tree
-RUN dotnet publish -c Release -o out
-RUN echo "\n####Build results: ####" && tree out
+RUN dotnet build
+RUN echo "\n####Build results: ####" && tree . 
 
 # Go back to where we build kaldi
 FROM build-kaldi
@@ -76,7 +76,7 @@ FROM build-kaldi
 
 WORKDIR /app
 
-COPY --from=build-env /app/Service/out .
+COPY --from=build-env /app .
 
 COPY Kaldi/ /app/Kaldi/
 WORKDIR /app/Kaldi
