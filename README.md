@@ -19,13 +19,14 @@ If you have installed docker, just
 
 ```
 cd AsrService
-chmod +x interact.sh
-./interact.sh
+chmod +x run.sh
+./run.sh
 ```
 
 And the build will start. It will pull some images like `microsoft/dotnet:aspnetcore-runtime` and `microsoft/dotnet:sdk`.
+After the build of the model is complete, just quit. `run.sh` will try to run it and it will fail because steps are not finished.
 
-It will build **kaldi** first, which may cost a lost of time and fail due to not enough memory. After **kaldi** echos `done`, your terminal may lag for a few minutes but it does not matter, just sit.
+It will build **kaldi** first, which may cost a lot of time and fail due to not enough memory. After **kaldi** echos `done`, your terminal may lag for a few minutes but it does not matter, just sit.
 
 After kaldi is built successfully, it will download some other easier dependencies.
 
@@ -35,17 +36,74 @@ And finally, it will compile the ASP.NET app as the **web interface**, as descri
 
 http://kaldi-asr.org/models/m2
 
-*TODO*
+If you have downloaded CVTE model, the tree is like: 
+```
+cvte
+└──────s5
+        ├───conf
+        ├───data
+        │   ├───fbank
+        │   │   └───test
+        │   │       └───split1
+        │   │           └───1
+        │   └───wav
+        │       └───00030
+        ├───exp
+        │   └───chain
+        │       └───tdnn
+        │           ├───decode_test
+        │           │   ├───log
+        │           │   └───scoring_kaldi
+        │           │       ├───log
+        │           │       ├───penalty_0.0
+        │           │       │   └───log
+        │           │       ├───penalty_0.5
+        │           │       │   └───log
+        │           │       ├───penalty_1.0
+        │           │       │   └───log
+        │           │       └───wer_details
+        │           └───graph
+        ├───fbank
+        │   └───test
+        └───local
+```
+
+Now copy or link the `cvte` to AsrService/Tools, then everything is done.
 
 ### Start service
 
-*TODO*
+Only one step left :
+
+```
+./run.sh deploy
+```
+
+and wait with patience. When
+
+```
+Service is ready
+```
+
+is shown, the model is set.
+
+Then you can visit the server from remote, with the rest api as following.
+
+If you try to debug, use
+
+```
+./run.sh interact
+```
+and it will let you play with the docker interactively. 
+
+To start service from inside container, run `/app/init.sh`.
 
 ## Rest API
 
 This service takes in speech in \*.wav format, which should be exactly **16 KHz** and **16-bit**.
 
-The server accepts POST request, with field of "wave" in the body, carrying the wave file with standards above.
+URL: `POST <host>/Decoding/Decode`
+
+The server accepts POST request, with field of `wave` in the body, carrying the wave file with standards above.
 
 The server sends response in following format:
 
@@ -57,6 +115,8 @@ The server sends response in following format:
 }
 ```
 
+Check if response\[`Message`] == `Ok`. **if not, there is a failure.**
+
 The first field `Id` is the id generated for the speech (GUID), with which we can do some tracing in the log;
 
 The second field `Text` is the Chinese text of the given speech.
@@ -65,7 +125,13 @@ The third field carries some messages if the decoding failed.
 
 for example:
 
-*TODO*
+```
+{
+  "Id": "eae8e7cc-55a7-4404-a44f-411452da5dd3",
+  "Text": "",
+  "Message": "the wav file is broken or not supported\nbad wave\n"
+}
+```
 
 ## Structure
 
@@ -96,19 +162,21 @@ For the minimalistic control, the service uses three configuration files.
       "IP": "127.0.0.1",
       "Port": 6379
     },
-    "EnableFakeDecoder": false                  // `enable fake decoder` means another decoder, will listen on `SpeechSignal` for work and provides fast but fake results. This is useful to test only "(1) web service" and "(2) message queue"`.
+    "EnableFakeDecoder": false,                  // `enable fake decoder` means another decoder, will listen on `SpeechSignal` for work and provides fast but fake results. This is useful to test only "(1) web service" and "(2) message queue"`.
+    "WorkerThreads": 300,                        // This affects ThreadPool.SetMinThreads(config["WorkerThreads"],
+    "CompletionPortThreads": 300                 //     config["CompletionPortThreads"]);
   }
 
   ```
    This configuration is for "(1) web interface". Run web interface with
    ```
    cd AsrService
-   dotnet Service/bin/Debug/netcoreapp2.0/Service.dll --decoder-config=path/to/async_decoder_config.json
+   dotnet Service/bin/Debug/netcoreapp2.1/publishService.dll --decoder-config=path/to/async_decoder_config.json
    ```
 
 The following files configures "(3) decoder"
 
-+ kaldi_config.json
++ KaldiConf/kaldi_config.json
   ```javascript
   {
       "max_wave_size_byte": 1000000,            // The maximum size of a wave file
@@ -121,7 +189,7 @@ The following files configures "(3) decoder"
   }
   ```
 
-+ decoder_config.json
++ KaldiConf/decoder_config.json
 
 This configuration file is very tricky and most of the explanation must be found in http://kaldi-asr.org/doc/online_decoding.html,
 because this is generally transcripting shell arguments to json. But you can follow the steps above and just modify some parameter for adjustment of performance.
@@ -132,7 +200,7 @@ because this is generally transcripting shell arguments to json. But you can fol
       "add_pitch": false,
       "beam": 3.0,    // the bigger, the better result, the slower
       "chunk_length_secs": -1.0,
-      "config": "/usr/local/kaldi/egs/cvte/s5/conf/online.conf",
+      "config": "KaldiConf/online.conf",
       "do_endpointing": false,
       "feature_type": "fbank",
       "frames_per_chunk": 50,
@@ -148,10 +216,10 @@ because this is generally transcripting shell arguments to json. But you can fol
   }
 ```
 
-  To run decoder with the configurations above, use: 
+  To run decoder with the configurations above, use (inside the container): 
   ```
   cd AsrService/Kaldi
-  ./kaldi-service ./kaldi_config.json ./decoder_config.json
+  ./kaldi-service path/to/kaldi_config.json path/to/decoder_config.json
   ```
 
 ## Performance
@@ -211,4 +279,15 @@ Well, before I can dig more into Kaldi, the performance is rather poor, see:
   "Message": "Ok"
 }
 avg rtt: 5.460889s 
+
 ```
+
+And the cost is even worse in a container.
+
+## Logging
+
+Logs are always kept under `AsrService/Logs`, which is shared with the container in shape of `volume`.
+
+`Logs/kaldi.log` stores logs about **decoder** and kaldi.
+`Logs/web.log` stores logs about **web interface**
+`Logs/redis.log` stores logs about redis.
