@@ -133,6 +133,94 @@ for example:
 }
 ```
 
+To test the API, use
+```
+./test.sh
+```
+
+This will run `APITest/autoapi.py` with different parameters. If this keeps failing, consider modify some configurations to make it faster.
+
+An expected result is:
+
+```
+python3 APITest/autoapi.py single_normal
+{
+  "Id": "35254669-40ed-44b2-9ef6-9bd333a20c20",
+  "Text": "关于黄款汇率希望大家不要被误导当然这个火鸡的答案并不对",
+  "Message": "Ok"
+}
+python3 APITest/autoapi.py parallel
+{
+  "Id": "7d27495a-7f3e-4db5-9b4b-c42213536cbc",
+  "Text": "关于与还款汇率希望大家不要被误导当然这个火鸡的答案并不对",
+  "Message": "Ok"
+}
+{
+  "Id": "577c152b-ef50-4c52-87a8-1d03e690b35a",
+  "Text": "关于还款汇率希望大家不要被误导当然这个火鸡的答案并不对",
+  "Message": "Ok"
+}
+{
+  "Id": "b6d4dfa4-175c-434a-942a-1b6654c2c4d3",
+  "Text": "关于黄款汇率希望大家不要被误导当然这个火鸡的答案并不对",
+  "Message": "Ok"
+}
+{
+  "Id": "8481b5cc-46e1-41f9-9916-59528181eda1",
+  "Text": "关于黄款汇率希望大家不要被误导当然这个火鸡的答案并不对",
+  "Message": "Ok"
+}
+{
+  "Id": "78b6de10-b0e1-48b5-9ea7-b205cacb1916",
+  "Text": "关于黄款汇率希望大家不要被误导当然这个火鸡的答案并不对",
+  "Message": "Ok"
+}
+{
+  "Id": "90fe65fb-7cc1-49ec-8cc1-bd546e1ee287",
+  "Text": "关于黄款汇率希望大家不要被误导当然这个火鸡的答案并不对",
+  "Message": "Ok"
+}
+{
+  "Id": "b625ba39-c257-404d-b6ef-45f46aad87f0",
+  "Text": "关于黄款汇率希望大家不要被误导当然这个火鸡的答案并不对",
+  "Message": "Ok"
+}
+{
+  "Id": "352b8e49-b97e-4b12-afdc-88b928fb07e1",
+  "Text": "关于黄款汇率希望大家不要被误导当然这歌火系的答案并不对",
+  "Message": "Ok"
+}
+{
+  "Id": "2bfa4f8e-c174-43d8-9985-9c7043cada57",
+  "Text": "关于黄款汇率希望大家不要被误导当然这个火鸡的答案并不对",
+  "Message": "Ok"
+}
+{
+  "Id": "a0175f9d-11fe-425e-a4b2-1766e6c9b50f",
+  "Text": "关于黄款汇率希望大家不要被误导当然这个火鸡的答案并不对",
+  "Message": "Ok"
+}
+avg rtt: 5.822241s
+python3 APITest/autoapi.py empty
+{
+  "Id": "eae8e7cc-55a7-4404-a44f-411452da5dd3",
+  "Text": "",
+  "Message": "the wav file is broken or not supported\nbad wave\n"
+}
+python3 APITest/autoapi.py bad_url
+{
+  "Id": "",
+  "Text": "",
+  "Message": "Usage: POST <host_name>/Decoding/Decode\nContent-Disposition: form-data; name=\"wave\"; filename=\"your.wav\"\nContent-Type: audio/x-wav\n\n<binary_contents>"
+}
+python3 APITest/autoapi.py big
+{
+  "Id": "59171039-555d-4dfb-bb1e-f10ea3914356",
+  "Text": "",
+  "Message": "The wave file should be smaller than 1000000 bytes"
+}
+```
+
 ## Structure
 
 This server comprises mainly three parts: (1) ASP.NET **web interface**, (2) a **message queue** implemented with redis, (3) **decoder** implemented with [kaldi](https://github.com/kaldi-asr/kaldi) .
