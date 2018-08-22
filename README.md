@@ -68,7 +68,7 @@ cvte
         └───local
 ```
 
-Now copy or link the `cvte` to AsrService/Tools, then everything is done.
+Now copy or link the `cvte` to `AsrService/Tools/cvte`, then everything is done. Note that `Tools` contains `cvte` directly.
 
 ### Start service
 
