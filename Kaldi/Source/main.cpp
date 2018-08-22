@@ -32,6 +32,7 @@ int main(int argc, char * argv[]) {
 		if (!decoder_config_i.is_open()) {
 			std::cerr << argv[0] << ": <decoder_config.json> :\""
 				<< argv[2] << "\" is not found." << std::endl;
+			return -1;
 		}
 		decoder_config_i >> decoder_config_j;
 
