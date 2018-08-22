@@ -7,7 +7,37 @@ This service is intended to decode **Mandarin Chinese** speech into Chinese text
 
 ## How to deploy
 
+### Build docker image
+
+This service is aimed to help you to build a **dockerized** ASR app free of any trouble, just follow the steps and wait for the downloading and compiling.
+
 This server runs on Ubuntu 16.04 and similar Linux systems, with large memory capacity >= 64G.
+
+Install [docker-ce](https://docs.docker.com/install/linux/docker-ce/ubuntu/) >= 18.06.0
+
+If you have installed docker, just 
+
+```
+cd AsrService
+chmod +x interact.sh
+./interact.sh
+```
+
+And the build will start. It will pull some images like `microsoft/dotnet:aspnetcore-runtime` and `microsoft/dotnet:sdk`.
+
+It will build **kaldi** first, which may cost a lost of time and fail due to not enough memory. After **kaldi** echos `done`, your terminal may lag for a few minutes but it does not matter, just sit.
+
+After kaldi is built successfully, it will download some other easier dependencies.
+
+And finally, it will compile the ASP.NET app as the **web interface**, as described below. Finally it will build **decoder**. 
+
+### Download CVTE model
+
+http://kaldi-asr.org/models/m2
+
+*TODO*
+
+### Start service
 
 *TODO*
 
