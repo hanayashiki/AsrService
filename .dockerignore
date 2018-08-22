@@ -5,5 +5,9 @@
 Dockerfile
 .dockerignore
 
+Logs/
+Logs/**/*
 Tools
 Tools/**/*
+
+run.sh

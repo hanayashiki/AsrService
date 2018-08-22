@@ -354,3 +354,6 @@ Tools/cvte/
 # vim crap
 *.swp
 Kaldi/kaldi-service
+
+# logs
+Logs/

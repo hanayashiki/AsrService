@@ -4,7 +4,7 @@
 	"online": false,
 	"num_threads_startup": 8,
 	"feature_type": "fbank",
-	"config": "/usr/local/kaldi/egs/cvte/s5/conf/online.conf",
+	"config": "Kaldi/conf/online.conf",
 	"add_pitch": false,
 	"max_active": 100,
 	"beam": 3.0,

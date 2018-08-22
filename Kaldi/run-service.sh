@@ -1,2 +1,1 @@
-cd Kaldi
-./kaldi-service ./kaldi_config.json ./decoder_config.json
+Kaldi/kaldi-service Kaldi/kaldi_config.json Kaldi/decoder_config.json
