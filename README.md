@@ -20,7 +20,7 @@ If you have installed docker, just
 ```
 cd AsrService
 chmod +x run.sh
-./run.sh
+./run.sh deploy
 ```
 
 And the build will start. It will pull some images like `microsoft/dotnet:aspnetcore-runtime` and `microsoft/dotnet:sdk`.
