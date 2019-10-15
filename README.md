@@ -19,7 +19,7 @@ If you have installed docker, just
 
 ```
 cd AsrService
-mkdir Bin
+mkdir Kaldi/Bin
 chmod +x run.sh
 ./run.sh deploy
 ```
