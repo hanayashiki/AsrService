@@ -19,6 +19,7 @@ If you have installed docker, just
 
 ```
 cd AsrService
+mkdir Bin
 chmod +x run.sh
 ./run.sh deploy
 ```
